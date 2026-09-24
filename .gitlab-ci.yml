@@ -4,9 +4,12 @@ stages:
   - build
   - test
   - package
+  - docker-build
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
 
 cache:
   paths:
@@ -30,3 +33,15 @@ package:
     paths:
       - target/*.jar
     expire_in: 1 week
+
+docker-build:
+  stage: docker-build
+  image: docker:27
+  services:
+    - name: docker:27-dind
+  dependencies:
+    - package
+  script:
+    - docker info
+    - docker build -t student-grade-app:1.0 .
+    - docker images
