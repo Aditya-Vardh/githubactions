@@ -1,13 +1,13 @@
-name: Java CI
+name: Java CI/CD
 
 on:
   push:
     branches:
       - main
 
-  pull_request:
-    branches:
-      - main
+permissions:
+  contents: read
+  packages: write
 
 jobs:
 
@@ -36,4 +36,17 @@ jobs:
         run: mvn package -DskipTests
 
       - name: Build Docker image
-        run: docker build -t student-grade-app:1.0 .
+        run: |
+          docker build \
+            -t ghcr.io/${{ github.repository_owner }}/student-grade-app:1.0 .
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/student-grade-app:1.0
