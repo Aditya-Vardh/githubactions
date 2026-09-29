@@ -34,3 +34,8 @@ jobs:
 
       - name: Package application
         run: mvn package -DskipTests
+        
+      - name: Check target folder
+        run: |
+              echo "Contents of target folder:"
+              ls -la target
